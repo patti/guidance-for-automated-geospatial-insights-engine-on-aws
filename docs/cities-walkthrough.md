@@ -13,7 +13,7 @@ By following the step-by-step instructions, you will learn how to access and int
 1. Create Groups to represent Countries
 2. Create Regions to represent Cities
 3. Create Polygons to represent Census Tracts
-4. Create Subscription to Zipcodes Analysis Job
+4. Create Subscription to Polygon-level Analysis Job
 5. Schedule Analysis Job
 6. View Analysis Result
 
@@ -25,32 +25,24 @@ AGIE takes an agnostic approach to defining geospatial hierarchies to enable it 
 
 The `Regions` module manages AOIs (areas of interest) as a hierarchy of `Groups`, `Regions`, `Polygons`, and `States`.
 
-To give a real world example of how this hierarchy is used, a `Country` is represented as a `Group`, a `City` as a `Region`, a `Census Tract` as a `Polygon`, and a `Month` as `State`.
+To give a real world example of how this hierarchy is used, a `Country` is represented as a `Group`, a `City` as a `Region`, a `Census Tract` as a `Polygon`, and a `Year` as `State`.
 
 ![hierarchy](images/regions-docs-hierarchy-cities.png)
 
 <table>
 <tr>
- <th colspan="2"> Description </th>
- <th colspan="2"> Cities Example </th>
+ <th colspan="1"> Description </th>
+ <th colspan="1"> Cities Example </th>
 </tr>
 
 <tr>
-<td>
 
-![hierarchy](images/regions-docs-hierarchy-group-cities.png)
-
-</td>
 <td>
 
 A `Group` is a logical collection of `Regions`, and is the highlest level of categorization within the hierarchy.
 
 </td>
-<td>
 
-![hierarchy](images/regions-docs-hierarchy-group-cities.png)
-
-</td>
 <td>
 
 A `Country` is the collection of one or multiple `Cities`.
@@ -59,21 +51,13 @@ A `Country` is the collection of one or multiple `Cities`.
 </tr>
 
 <tr>
-<td>
 
-![hierarchy](images/regions-docs-hierarchy-region-cities.png)
-
-</td>
 <td>
 
 A `Region` is a logical collection of `Polygons`. A `Region` belongs to a single `Group`, and can contain multiple `Polygons`.
 
 </td>
-<td>
 
-![hierarchy](images/regions-docs-hierarchy-city.png)
-
-</td>
 <td>
 
 A `City` is comprised of multiple `Census Tracts`.
@@ -82,11 +66,7 @@ A `City` is comprised of multiple `Census Tracts`.
 </tr>
 
 <tr>
-<td>
 
-![hierarchy](images/regions-docs-hierarchy-polygon-cities.png)
-
-</td>
 <td>
 
 A `Polygon` represents the physical AOI defined by a set of coordinates. This is the level that geospatial analysis is performed.
@@ -94,11 +74,7 @@ A `Polygon` represents the physical AOI defined by a set of coordinates. This is
 A `Polygon` is part of a single `Region`, and can have multiple `States` over time.
 
 </td>
-<td>
 
-![hierarchy](images/regions-docs-hierarchy-tract.png)
-
-</td>
 <td>
 
 A `Census tract` is the physical area within a `City` to be analysed.
@@ -107,20 +83,12 @@ A `Census tract` is the physical area within a `City` to be analysed.
 </tr>
 
 <tr>
-<td>
 
-![hierarchy](images/regions-docs-hierarchy-state.png)
-
-</td>
 <td>
 
 A `State` represents the state of a `Polygon` at a specific TOI (time of interest). Multiple `States` representing different points in time can be associated with a `Polygon`.
 </td>
-<td>
 
-![hierarchy](images/regions-docs-hierarchy-month.png)
-
-</td>
 <td>
 
 A `State` provides details of the `census tract`. Over time there can be multiple `States` associated with a `census tract`.
@@ -153,7 +121,7 @@ aws cloudformation describe-stacks --stack-name "agie-$ENVIRONMENT-regions" --qu
 
 ### 1. Create the top level Group
 
-Create a `Group` to represent a `Grower` named `Acme Growers`:
+Create a `Group` to represent a `Country` named `United States`:
 
 **Request:**
 
@@ -165,7 +133,7 @@ Accept: application/json
 Authorization: Bearer <AUTH_TOKEN>
 
 {
-  "name": "Acme Growers"
+  "name": "United States"
 }
 ```
 
@@ -177,7 +145,7 @@ x-id: 01j16mxaxnnxcessmwv66xw87z
 
 {
     "id": "01j16mxaxnnxcessmwv66xw87z",
-    "name": "Acme Growers",
+    "name": "United States",
     "totalArea": 0,
     "totalRegions": 0,
     "createdBy": "someone@somewhere.com",
@@ -189,7 +157,7 @@ x-id: 01j16mxaxnnxcessmwv66xw87z
 
 ### 2. Create a Region belonging to the Group
 
-Create a `Region` to represent a `Farm` named `Greenfield Farm`. Replace `<GROUP_ID>` with the `id` of the created `Group`:
+Create a `Region` to represent a `City` named `New York City`. Replace `<GROUP_ID>` with the `id` of the created `Group`:
 
 **Request:**
 
@@ -201,7 +169,7 @@ Accept: application/json
 Authorization: Bearer <AUTH_TOKEN>
 
 {
-    "name": "Greenfield Farm",
+    "name": "New York City",
     "processingConfig": {
         "mode": "disabled"
     }
@@ -217,7 +185,7 @@ x-id: 01j16mztr8eztq3bmbmzmphm3h
 {
     "id": "01j16mztr8eztq3bmbmzmphm3h",
     "groupId": "01j16mxaxnnxcessmwv66xw87z",
-    "name": "Greenfield Farm",
+    "name": "New York City",
     "totalArea": 0,
     "totalPolygons": 0,
     "processingConfig": {
@@ -324,9 +292,9 @@ x-id: 01j16n5fc94t165a5h8tvh5jhg
 
 ### 4. Set the State of a Polygon
 
-Create a `State` to represent a `Crop Season` for a specific field. Replace `<POLYGON_ID>` with the `id` of the created `Polygon`.
+Create a `State` to represent a `Month` for a specific tract. Replace `<POLYGON_ID>` with the `id` of the created `Polygon`.
 
-In this step we are using `tags` and `attributes` to store additional data unique to our use case. Here we are adding `crop` and `plantDate` as `tags` so that we can filter by them later, and adding `targetYield` as an `attribute`.
+In this step we are using `tags` and `attributes` to store additional data unique to our use case. Here we are adding `population` and `year` as `tags` so that we can filter by them later, and adding `riskIndex` as an `attribute`.
 
 **Request:**
 
@@ -340,11 +308,11 @@ Authorization: Bearer <AUTH_TOKEN>
 {
   "timestamp": "2024-03-21T03:47:32.452Z",
   "tags": {
-    "crop": "corn",
-    "plantDate": "2024-04-01T00:00:00.000Z"
+    "population": "5000",
+    "year": "2020"
   },
   "attributes": {
-    "targetYield": 1342
+    "riskIndex": 63
   }
 }
 ```
@@ -364,11 +332,11 @@ x-id: 01hwke0d3f03j7rtyjna7npdj8
     "createdBy": "someone@somewhere.com",
     "createdAt": "2024-06-25T03:01:39.091Z",
     "attributes": {
-        "targetYield": 1342
+        "riskIndex": 63
     },
     "tags": {
-        "crop": "corn",
-        "plantDate": "2024-04-01T00:00:00.000Z"
+        "population": "5000",
+        "year": "2020"
     }
 }
 ```
