@@ -4,41 +4,41 @@ This guide assumes you have a fresh [installation](./deployment.md) of the AWS `
 
 ## Introduction
 
-In recent years, the availability of high-resolution satellite imagery has revolutionized the way we monitor and analyze agricultural landscapes. By combining remote sensing techniques with advanced software tools, it is now possible to track Normalized Difference Vegetation Index (`NDVI`) values across vast areas, enabling accurate and timely assessments of soil conditions and vegetation health.
+In recent years, the availability of high-resolution satellite imagery has revolutionized the way we monitor and analyze climate and environment risks to people and communities. By combining remote sensing techniques with advanced software tools and cloud compute, it is now possible to track earth observation (EO) indices representing physical environmental attributions across vast areas. This enables accurate and timely assessments of land cover, vegetation, water, temperature, air quality, and more. 
 
-This walkthrough aims to guide you through the process of using `AGIE` to ingest satellite imagery and use it to calculate and visualize `NDVI` values for agricultural fields or regions of interest.
+This walkthrough aims to guide you through the process of using `AGIE` to ingest satellite imagery, weather, and air quality data, and use it to model and visualize data layers important for monitoring and managing environmental risks to people within cities and communities.
 
-By following the step-by-step instructions, you will learn how to access and interpret satellite data, apply NDVI calculations, and generate insightful maps and reports that can inform decision-making processes in agriculture, land management, and environmental monitoring
+By following the step-by-step instructions, you will learn how to access and interpret geospatial data, derive EO indices, and generate insightful maps and reports that can inform decision-making processes. 
 
-1. Create Growers
-2. Create Farms
-3. Create Fields
-4. Create Subscription to Fields Analysis Job
+1. Create Groups to represent Countries
+2. Create Regions to represent Cities
+3. Create Polygons to represent Census Tracts
+4. Create Subscription to Zipcodes Analysis Job
 5. Schedule Analysis Job
 6. View Analysis Result
 
 Note that AGIE is a framework intended to be the foundation upon which you build your application on top. The framework includes an optional UI stack that demonstrates some of the backend modules capabilities that users can extend to fit their own requirements.
 
-## Mapping AGIE to AgTech Domain
+## Mapping AGIE to Sustainable Urban Spaces Use Case
 
-AGIE takes an agnostic approach to defining geospatial hierarchies to enable it to be applicable cross domains. As this walkthrough focuses on the AgTech domain, the following is how AGIE maps specifically to AgTech.
+AGIE takes an agnostic approach to defining geospatial hierarchies to enable it to be applicable cross domains. As this walkthrough focuses on analysis of urban areas, the following is how we will interpret AGIE's geospatial hierarchy.
 
 The `Regions` module manages AOIs (areas of interest) as a hierarchy of `Groups`, `Regions`, `Polygons`, and `States`.
 
-To give a real world example of how this hierarchy is used, in AgTech a `Grower` is represented as a `Group`, a `Farm` as a `Region`, a `Field` as a `Polygon`, and a `Crop Season` as `State`.
+To give a real world example of how this hierarchy is used, a `Country` is represented as a `Group`, a `City` as a `Region`, a `Census Tract` as a `Polygon`, and a `Month` as `State`.
 
-![hierarchy](images/regions-docs-hierarchy.png)
+![hierarchy](images/regions-docs-hierarchy-cities.png)
 
 <table>
 <tr>
  <th colspan="2"> Description </th>
- <th colspan="2"> AgTech Example </th>
+ <th colspan="2"> Cities Example </th>
 </tr>
 
 <tr>
 <td>
 
-![hierarchy](images/regions-docs-hierarchy-group.png)
+![hierarchy](images/regions-docs-hierarchy-group-cities.png)
 
 </td>
 <td>
@@ -48,12 +48,12 @@ A `Group` is a logical collection of `Regions`, and is the highlest level of cat
 </td>
 <td>
 
-![hierarchy](images/regions-docs-hierarchy-grower.png)
+![hierarchy](images/regions-docs-hierarchy-group-cities.png)
 
 </td>
 <td>
 
-A `Grower` is the owner of one or multiple `Farms`.
+A `Country` is the collection of one or multiple `Cities`.
 
 </td>
 </tr>
@@ -61,7 +61,7 @@ A `Grower` is the owner of one or multiple `Farms`.
 <tr>
 <td>
 
-![hierarchy](images/regions-docs-hierarchy-region.png)
+![hierarchy](images/regions-docs-hierarchy-region-cities.png)
 
 </td>
 <td>
@@ -71,12 +71,12 @@ A `Region` is a logical collection of `Polygons`. A `Region` belongs to a single
 </td>
 <td>
 
-![hierarchy](images/regions-docs-hierarchy-farm.png)
+![hierarchy](images/regions-docs-hierarchy-city.png)
 
 </td>
 <td>
 
-A `Farm` is comprised of multiple `Fields`, and owned by a single `Grower`.
+A `City` is comprised of multiple `Census Tracts`.
 
 </td>
 </tr>
@@ -84,7 +84,7 @@ A `Farm` is comprised of multiple `Fields`, and owned by a single `Grower`.
 <tr>
 <td>
 
-![hierarchy](images/regions-docs-hierarchy-polygon.png)
+![hierarchy](images/regions-docs-hierarchy-polygon-cities.png)
 
 </td>
 <td>
@@ -96,12 +96,12 @@ A `Polygon` is part of a single `Region`, and can have multiple `States` over ti
 </td>
 <td>
 
-![hierarchy](images/regions-docs-hierarchy-field.png)
+![hierarchy](images/regions-docs-hierarchy-tract.png)
 
 </td>
 <td>
 
-A `Field` is a physical location within a `Farm` to be analysed, belonging to a single `Farm`.
+A `Census tract` is the physical area within a `City` to be analysed.
 
 </td>
 </tr>
@@ -118,12 +118,12 @@ A `State` represents the state of a `Polygon` at a specific TOI (time of interes
 </td>
 <td>
 
-![hierarchy](images/regions-docs-hierarchy-cropseason.png)
+![hierarchy](images/regions-docs-hierarchy-month.png)
 
 </td>
 <td>
 
-A `Crop Season` provides details of the planted crop. Over time there can be multiple `Crop Seasons` associated with a `Field`.
+A `State` provides details of the `census tract`. Over time there can be multiple `States` associated with a `census tract`.
 
 </td>
 </tr>
